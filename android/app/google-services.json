@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "100969705107",
+    "project_id": "fbauthall",
+    "storage_bucket": "fbauthall.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100969705107:android:615e4db7fc0a74c4b5e766",
+        "android_client_info": {
+          "package_name": "com.example.fbauthentication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnM94VRRisLiRlglC4AONAFBJ6AMy2kak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
