@@ -1,26 +1,28 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:fbauthentication/SignUp/signup.dart';
+import 'dart:async';
+
+import 'package:fbauthentication/Home/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+import 'loginpage.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _LoginPageState extends State<LoginPage> {
   final EmailController = TextEditingController();
   final PassWordController = TextEditingController();
-  final ConformPassword = TextEditingController();
   @override
   Widget build(BuildContext context) {
-
     bool showPass = false;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset : false,
       backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
@@ -50,42 +52,37 @@ class _SignUpState extends State<SignUp> {
           Expanded(
             flex: 4,
             child: Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 0),
+              padding: const EdgeInsets.only(left: 20, right: 20, top:30),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text("Sign up", style: TextStyle(color: Color(0xFFae4349),
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold),),
+                  Text("Sign in", style: TextStyle(color: Color(0xFFae4349), fontSize: 25, fontWeight: FontWeight.bold),),
                   SizedBox(height: 10,),
                   MyTextField("Email Address", EmailController, false),
                   SizedBox(height: 10,),
                   MyTextField("Password", PassWordController, true),
                   SizedBox(height: 10,),
-                  MyTextField("Conform password", ConformPassword, true),
                   SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("Already a Member? "),
+                      Text("Not a Member? "),
                       GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                          },
-                          child: Text("Sign In", style: TextStyle(color: Color(
-                              0xFFae4349), fontWeight: FontWeight.bold),))
+                         onTap: (){
+                           Navigator.pop(context);
+                         },
+                          child: Text("Sign Up", style: TextStyle(color: Color(0xFFae4349), fontWeight: FontWeight.bold),))
                     ],
                   ),
                   SizedBox(height: 10,),
                   Center(
                     child: GestureDetector(
                       onTap: (){
-                        if(PassWordController.text.trim().length >= 6
-                            && PassWordController.text == ConformPassword.text
-                            && EmailController.text.trim().isNotEmpty
+                        if(EmailController.text.trim().isNotEmpty &&
+                           PassWordController.text.trim().length >= 6
+                           && PassWordController.text.trim().isNotEmpty
                         ){
-                          CreateAccount();
+                          CreatedAcc();
                         }
                       },
                       child: Container(
@@ -96,10 +93,7 @@ class _SignUpState extends State<SignUp> {
                           color: Color(0xFFae4349),
                         ),
                         child: Center(
-                          child: Text("Sign up", style: TextStyle(color: Colors
-                              .white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18),),
+                          child: Text("Sign in", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),),
                         ),
                       ),
                     ),
@@ -145,7 +139,17 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  TextField MyTextField(String hintText, Controller, bool istrue) {
+  Future<void>  CreatedAcc() async{
+    // FirebaseAuth auth = await FirebaseAuth.instance;
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: EmailController.text.trim(), password: PassWordController.text.trim()
+    ).then((value){
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
+    }).onError((err, stacktrace){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err.toString())));
+    });
+}
+
+  TextField MyTextField(String hintText, Controller, bool istrue){
     return TextField(
       controller: Controller,
       obscureText: istrue,
@@ -157,64 +161,4 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
-
-  Future<void> CreateAccount() async {
-    // FirebaseAuth auth = await FirebaseAuth.instance;
-
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: EmailController.text.trim(),
-      password: EmailController.text.trim(),
-    ).then((value){
-      String name = EmailController.text.toString();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SuccessFully created an account with $name")));
-    }).onError((error, stackTrace){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
-    });
-  }
-}
-
-
-
-class MyCustomClipper extends CustomClipper<Path>{
-  @override
-  Path getClip(Size size) {
-    double H = size.height;
-    double W = size.width;
-    // TODO: implement getClip
-    Path path = Path();
-    path.moveTo(0, H*(1.5/5));
-    path.quadraticBezierTo(W*(3/5), H+70, W, H*(3/5));
-    path.lineTo(W, 0);
-    path.lineTo(0, 0);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // TODO: implement shouldReclip
-    return true;
-  }
-}
-
-
-class BottomCustomClipper extends CustomClipper<Path>{
-  @override
-  Path getClip(Size size) {
-    // TODO: implement getClip
-    double H = size.height;
-    double W = size.width;
-    Path path = Path();
-    path.lineTo(0, H);
-    path.lineTo(W, H);
-    path.quadraticBezierTo(W*(4/5), H*(0.5/5), W*(2/5), H*(2/5));
-    path.quadraticBezierTo(W*(1/5), H*(2.8/5), 0, 0);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // TODO: implement shouldReclip
-    return true;
-  }
-
 }
